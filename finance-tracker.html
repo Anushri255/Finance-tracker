@@ -1,1 +1,144 @@
+<!DOCTYPE html>
+<html lang="en">
 
+<head>
+    <meta charset="UTF-8">
+    <title>Personal Finance Tracker</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+            color: #333;
+            margin: 0;
+            padding: 0;
+        }
+
+        .container {
+            max-width: 600px;
+            margin: 30px auto;
+            padding: 20px;
+            background-color: #fff;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+
+        h1,
+        h2 {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        .dashboard {
+            display: flex;
+            justify-content: space-around;
+            margin-bottom: 20px;
+        }
+
+        .dashboard div {
+            text-align: center;
+        }
+
+        p {
+            font-size: 20px;
+            margin: 5px 0;
+        }
+
+        form {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 20px;
+        }
+
+        form input,
+        form select,
+        form button {
+            padding: 10px;
+            font-size: 16px;
+            margin-right: 10px;
+        }
+
+        form button {
+            background-color: #28a745;
+            color: #fff;
+            border: none;
+            cursor: pointer;
+        }
+
+        form button:hover {
+            background-color: #218838;
+        }
+
+        .transaction-history ul {
+            list-style: none;
+            padding: 0;
+        }
+
+        .transaction-history li {
+            background-color: #f8f9fa;
+            margin-bottom: 10px;
+            padding: 10px;
+            display: flex;
+            justify-content: space-between;
+            border-left: 5px solid;
+        }
+
+        .transaction-history .income {
+            border-color: #28a745;
+        }
+
+        .transaction-history .expense {
+            border-color: #dc3545;
+        }
+
+        .transaction-history button {
+            background-color: #dc3545;
+            color: #fff;
+            border: none;
+            cursor: pointer;
+        }
+
+        .transaction-history button:hover {
+            background-color: #c82333;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <h1>Personal Finance Tracker</h1>
+
+        <div class="dashboard">
+            <div class="income">
+                <h2>Total Income</h2>
+                <p id="total-income">$0.00</p>
+            </div>
+            <div class="expenses">
+                <h2>Total Expenses</h2>
+                <p id="total-expenses">$0.00</p>
+            </div>
+            <div class="balance">
+                <h2>Balance</h2>
+                <p id="balance">$0.00</p>
+            </div>
+        </div>
+
+        <div class="add-transaction">
+            <h2>Add Transaction</h2>
+            <form id="transaction-form">
+                <input type="text" id="description" placeholder="Description" required>
+                <input type="number" id="amount" placeholder="Amount" required>
+                <select id="type">
+                    <option value="income">Income</option>
+                    <option value="expense">Expense</option>
+                </select>
+                <button type="submit">Add Transaction</button>
+            </form>
+        </div>
+
+        <div class="transaction-history">
+            <h2>Transaction History</h2>
+            <ul id="transaction-list"></ul>
+        </div>
+    </div>
+</body>
+
+</html>
