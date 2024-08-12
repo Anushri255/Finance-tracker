@@ -204,6 +204,15 @@
         list.innerHTML = '';
         transactions.forEach(addTransactionDOM);
     }
+
+    function loadFromLocalStorage() {
+    const storedTransactions = localStorage.getItem('transactions');
+    if (storedTransactions) {
+        transactions = JSON.parse(storedTransactions);
+        renderTransactions();
+        updateDashboard();
+    }
+}
 </script>
 
 </html>
