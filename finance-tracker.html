@@ -140,5 +140,28 @@
         </div>
     </div>
 </body>
+<script>
+    function addTransaction(description, amount, type) {
+        const transaction = {
+            id: generateID(),
+            description,
+            amount,
+            type
+        };
+
+        transactions.push(transaction);
+        addTransactionDOM(transaction);
+    }
+
+    function generateID() {
+        return Math.floor(Math.random() * 100000000);
+    }
+
+    function removeTransaction(id) {
+        transactions = transactions.filter(transaction => transaction.id !== id);
+        updateDashboard();
+        renderTransactions();
+    }
+</script>
 
 </html>
