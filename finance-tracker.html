@@ -43,9 +43,13 @@
         }
 
         form {
+            margin-bottom: 20px;
+        }
+
+        .form-row {
             display: flex;
             justify-content: space-between;
-            margin-bottom: 20px;
+            margin-bottom: 10px;
         }
 
         form input,
@@ -53,6 +57,7 @@
         form button {
             padding: 10px;
             font-size: 16px;
+            flex: 1;
             margin-right: 10px;
         }
 
@@ -61,6 +66,7 @@
             color: #fff;
             border: none;
             cursor: pointer;
+            margin-right: 0;
         }
 
         form button:hover {
@@ -99,6 +105,19 @@
         .transaction-history button:hover {
             background-color: #c82333;
         }
+
+        .filter-search {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 20px;
+        }
+
+        .filter-search select,
+        .filter-search input {
+            padding: 10px;
+            font-size: 16px;
+            width: 48%;
+        }
     </style>
 </head>
 
@@ -124,21 +143,29 @@
         <div class="add-transaction">
             <h2>Add Transaction</h2>
             <form id="transaction-form">
-                <input type="text" id="description" placeholder="Description" required>
-                <input type="number" id="amount" placeholder="Amount" required>
-                <select id="type">
-                    <option value="income">Income</option>
-                    <option value="expense">Expense</option>
-                </select>
-                <select onchange="filterTransactions(this.value)">
-                    <option value="">All</option>
-                    <option value="income">Income</option>
-                    <option value="expense">Expense</option>
-                </select>
-                
-                <input type="text" placeholder="Search" onkeyup="searchTransactions(this.value)">
-                <button type="submit">Add Transaction</button>
+                <div class="form-row">
+                    <input type="text" id="description" placeholder="Description" required>
+                </div>
+                <div class="form-row">
+                    <input type="number" id="amount" placeholder="Amount" required>
+                    <select id="type">
+                        <option value="income">Income</option>
+                        <option value="expense">Expense</option>
+                    </select>
+                </div>
+                <div class="form-row">
+                    <button type="submit">Add Transaction</button>
+                </div>
             </form>
+        </div>
+
+        <div class="filter-search">
+            <select onchange="filterTransactions(this.value)">
+                <option value="">All</option>
+                <option value="income">Income</option>
+                <option value="expense">Expense</option>
+            </select>
+            <input type="text" placeholder="Search" onkeyup="searchTransactions(this.value)">
         </div>
 
         <div class="transaction-history">
@@ -146,138 +173,127 @@
             <ul id="transaction-list"></ul>
         </div>
     </div>
-</body>
-<script>
-    document.getElementById('transaction-form').addEventListener('submit', function (e) {
-        e.preventDefault();
 
-        const description = document.getElementById('description').value;
-        const amount = parseFloat(document.getElementById('amount').value);
-        const type = document.getElementById('type').value;
+    <script>
+        document.getElementById('transaction-form').addEventListener('submit', function (e) {
+            e.preventDefault();
 
-        addTransaction(description, amount, type);
-        updateDashboard();
-    });
+            const description = document.getElementById('description').value;
+            const amount = parseFloat(document.getElementById('amount').value);
+            const type = document.getElementById('type').value;
 
-    let transactions = [];
+            addTransaction(description, amount, type);
+            updateDashboard();
+            saveToLocalStorage();
+        });
 
-    function addTransaction(description, amount, type) {
-        const transaction = {
-            id: generateID(),
-            description,
-            amount,
-            type
-        };
+        let transactions = [];
 
-        transactions.push(transaction);
-        addTransactionDOM(transaction);
-    }
+        function addTransaction(description, amount, type) {
+            const transaction = {
+                id: generateID(),
+                description,
+                amount,
+                type
+            };
 
-    function generateID() {
-        return Math.floor(Math.random() * 100000000);
-    }
-
-    function removeTransaction(id) {
-        transactions = transactions.filter(transaction => transaction.id !== id);
-        updateDashboard();
-        renderTransactions();
-    }
-
-    function addTransactionDOM(transaction) {
-        const list = document.getElementById('transaction-list');
-
-        const item = document.createElement('li');
-        item.classList.add(transaction.type);
-
-        item.innerHTML = `
-        ${transaction.description} <span>${transaction.type === 'income' ? '+' : '-'}$${Math.abs(transaction.amount).toFixed(2)}</span>
-        <button onclick="removeTransaction(${transaction.id})">x</button>
-    `;
-
-        list.appendChild(item);
-    }
-
-    function updateDashboard() {
-        const income = transactions.filter(t => t.type === 'income').reduce((sum, t) => sum + t.amount, 0);
-        const expenses = transactions.filter(t => t.type === 'expense').reduce((sum, t) => sum + t.amount, 0);
-        const balance = income - expenses;
-
-        document.getElementById('total-income').textContent = `$${income.toFixed(2)}`;
-        document.getElementById('total-expenses').textContent = `$${expenses.toFixed(2)}`;
-        document.getElementById('balance').textContent = `$${balance.toFixed(2)}`;
-    }
-    function renderTransactions() {
-        const list = document.getElementById('transaction-list');
-        list.innerHTML = '';
-        transactions.forEach(addTransactionDOM);
-    }
-
-    function saveToLocalStorage() {
-        localStorage.setItem('transactions', JSON.stringify(transactions));
-    }
-
-    function loadFromLocalStorage() {
-        const storedTransactions = localStorage.getItem('transactions');
-        if (storedTransactions) {
-            transactions = JSON.parse(storedTransactions);
-            renderTransactions();
+            transactions.push(transaction);
+            addTransactionDOM(transaction);
             updateDashboard();
         }
-    }
 
-    function editTransaction(id) {
-        const transaction = transactions.find(t => t.id === id);
+        function generateID() {
+            return Math.floor(Math.random() * 100000000);
+        }
 
-        document.getElementById('description').value = transaction.description;
-        document.getElementById('amount').value = transaction.amount;
-        document.getElementById('type').value = transaction.type;
+        function removeTransaction(id) {
+            transactions = transactions.filter(transaction => transaction.id !== id);
+            updateDashboard();
+            renderTransactions();
+        }
 
-        removeTransaction(id);
-    }
+        function addTransactionDOM(transaction) {
+            const list = document.getElementById('transaction-list');
 
-    function addTransactionDOM(transaction) {
-        const list = document.getElementById('transaction-list');
+            const item = document.createElement('li');
+            item.classList.add(transaction.type);
 
-        const item = document.createElement('li');
-        item.classList.add(transaction.type);
+            item.innerHTML = `
+                ${transaction.description} <span>${transaction.type === 'income' ? '+' : '-'}$${Math.abs(transaction.amount).toFixed(2)}</span>
+                <button onclick="editTransaction(${transaction.id})">Edit</button>
+                <button onclick="removeTransaction(${transaction.id})">x</button>
+            `;
 
-        item.innerHTML = `
-        ${transaction.description} <span>${transaction.type === 'income' ? '+' : '-'}$${Math.abs(transaction.amount).toFixed(2)}</span>
-        <button onclick="editTransaction(${transaction.id})">Edit</button>
-        <button onclick="removeTransaction(${transaction.id})">x</button>
-    `;
+            list.appendChild(item);
+        }
 
-        list.appendChild(item);
-    }
-    function filterTransactions(filterType) {
-    let filteredTransactions = transactions;
+        function updateDashboard() {
+            const income = transactions.filter(t => t.type === 'income').reduce((sum, t) => sum + t.amount, 0);
+            const expenses = transactions.filter(t => t.type === 'expense').reduce((sum, t) => sum + t.amount, 0);
+            const balance = income - expenses;
 
-    if (filterType === 'income') {
-        filteredTransactions = transactions.filter(t => t.type === 'income');
-    } else if (filterType === 'expense') {
-        filteredTransactions = transactions.filter(t => t.type === 'expense');
-    }
+            document.getElementById('total-income').textContent = `$${income.toFixed(2)}`;
+            document.getElementById('total-expenses').textContent = `$${expenses.toFixed(2)}`;
+            document.getElementById('balance').textContent = `$${balance.toFixed(2)}`;
+        }
 
-    renderFilteredTransactions(filteredTransactions);
-}
+        function renderTransactions() {
+            const list = document.getElementById('transaction-list');
+            list.innerHTML = '';
+            transactions.forEach(addTransactionDOM);
+        }
 
-function searchTransactions(keyword) {
-    const filteredTransactions = transactions.filter(t =>
-        t.description.toLowerCase().includes(keyword.toLowerCase())
-    );
-    renderFilteredTransactions(filteredTransactions);
-}
+        function saveToLocalStorage() {
+            localStorage.setItem('transactions', JSON.stringify(transactions));
+        }
 
-function renderFilteredTransactions(filteredTransactions) {
-    const list = document.getElementById('transaction-list');
-    list.innerHTML = '';
+        function loadFromLocalStorage() {
+            const storedTransactions = localStorage.getItem('transactions');
+            if (storedTransactions) {
+                transactions = JSON.parse(storedTransactions);
+                renderTransactions();
+                updateDashboard();
+            }
+        }
 
-    filteredTransactions.forEach(addTransactionDOM);
-}
+        function editTransaction(id) {
+            const transaction = transactions.find(t => t.id === id);
 
+            document.getElementById('description').value = transaction.description;
+            document.getElementById('amount').value = transaction.amount;
+            document.getElementById('type').value = transaction.type;
 
+            removeTransaction(id);
+        }
 
-    loadFromLocalStorage();
-</script>
+        function filterTransactions(filterType) {
+            let filteredTransactions = transactions;
+
+            if (filterType === 'income') {
+                filteredTransactions = transactions.filter(t => t.type === 'income');
+            } else if (filterType === 'expense') {
+                filteredTransactions = transactions.filter(t => t.type === 'expense');
+            }
+
+            renderFilteredTransactions(filteredTransactions);
+        }
+
+        function searchTransactions(keyword) {
+            const filteredTransactions = transactions.filter(t =>
+                t.description.toLowerCase().includes(keyword.toLowerCase())
+            );
+            renderFilteredTransactions(filteredTransactions);
+        }
+
+        function renderFilteredTransactions(filteredTransactions) {
+            const list = document.getElementById('transaction-list');
+            list.innerHTML = '';
+
+            filteredTransactions.forEach(addTransactionDOM);
+        }
+
+        loadFromLocalStorage();
+    </script>
+</body>
 
 </html>
