@@ -162,6 +162,20 @@
         updateDashboard();
         renderTransactions();
     }
+
+    function addTransactionDOM(transaction) {
+        const list = document.getElementById('transaction-list');
+
+        const item = document.createElement('li');
+        item.classList.add(transaction.type);
+
+        item.innerHTML = `
+        ${transaction.description} <span>${transaction.type === 'income' ? '+' : '-'}$${Math.abs(transaction.amount).toFixed(2)}</span>
+        <button onclick="removeTransaction(${transaction.id})">x</button>
+    `;
+
+        list.appendChild(item);
+    }
 </script>
 
 </html>
