@@ -187,6 +187,16 @@
 
         list.appendChild(item);
     }
+
+    function updateDashboard() {
+        const income = transactions.filter(t => t.type === 'income').reduce((sum, t) => sum + t.amount, 0);
+        const expenses = transactions.filter(t => t.type === 'expense').reduce((sum, t) => sum + t.amount, 0);
+        const balance = income - expenses;
+
+        document.getElementById('total-income').textContent = `$${income.toFixed(2)}`;
+        document.getElementById('total-expenses').textContent = `$${expenses.toFixed(2)}`;
+        document.getElementById('balance').textContent = `$${balance.toFixed(2)}`;
+    }
 </script>
 
 </html>
