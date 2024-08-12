@@ -130,6 +130,13 @@
                     <option value="income">Income</option>
                     <option value="expense">Expense</option>
                 </select>
+                <select onchange="filterTransactions(this.value)">
+                    <option value="">All</option>
+                    <option value="income">Income</option>
+                    <option value="expense">Expense</option>
+                </select>
+                
+                <input type="text" placeholder="Search" onkeyup="searchTransactions(this.value)">
                 <button type="submit">Add Transaction</button>
             </form>
         </div>
@@ -242,6 +249,33 @@
 
         list.appendChild(item);
     }
+    function filterTransactions(filterType) {
+    let filteredTransactions = transactions;
+
+    if (filterType === 'income') {
+        filteredTransactions = transactions.filter(t => t.type === 'income');
+    } else if (filterType === 'expense') {
+        filteredTransactions = transactions.filter(t => t.type === 'expense');
+    }
+
+    renderFilteredTransactions(filteredTransactions);
+}
+
+function searchTransactions(keyword) {
+    const filteredTransactions = transactions.filter(t =>
+        t.description.toLowerCase().includes(keyword.toLowerCase())
+    );
+    renderFilteredTransactions(filteredTransactions);
+}
+
+function renderFilteredTransactions(filteredTransactions) {
+    const list = document.getElementById('transaction-list');
+    list.innerHTML = '';
+
+    filteredTransactions.forEach(addTransactionDOM);
+}
+
+
 
     loadFromLocalStorage();
 </script>
